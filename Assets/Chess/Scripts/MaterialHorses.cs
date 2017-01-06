@@ -7,7 +7,7 @@ public class MaterialHorses : MonoBehaviour {
 	public GameObject horses;
 	// Use this for initialization
 	void Start () {
-		horses.GetComponent<MeshRenderer>().material = mat;
+
 	}
 	
 	// Update is called once per frame
