@@ -4,18 +4,28 @@ using UnityEngine.UI;
 
 public class ClickAction : MonoBehaviour
 {
+    public static ClickAction main;
 	Ray touchMouse;
 	RaycastHit rhInfo;
 	public Text text;
 
 	private Vector3 startTouch, endTouch;
-
+    public Material[] clickMat;
+    public Camera CamCurrent;
+    void Awake()
+    {
+        main = this;
+    }
+    void Start()
+    {
+        CamCurrent = GameObject.Find("Cam2").GetComponent<Camera>();
+    }
 	void Update ()
 	{
 		if (Input.GetMouseButtonDown (0)) {
 			startTouch = Input.mousePosition;
 			if (gameState < 2) {
-				touchMouse = Camera.main.ScreenPointToRay (Input.mousePosition);
+				touchMouse = CamCurrent.ScreenPointToRay (Input.mousePosition);
 				if (Physics.Raycast (touchMouse, out rhInfo, 500.0f)) {
 					if (rhInfo.collider.gameObject.tag == "Knight") {
 						text.text = rhInfo.collider.gameObject.name;
@@ -27,11 +37,11 @@ public class ClickAction : MonoBehaviour
 		}
 		if (Input.GetMouseButtonUp (0)) {
 			endTouch = Input.mousePosition;
-			if (Vector3.Distance (startTouch, endTouch) < 20) {
+			if (Vector3.Distance (startTouch, endTouch) < 25) {
 				if (gameState == 1) {
 					Vector3 selectedCoord;
-
-					touchMouse = Camera.main.ScreenPointToRay (Input.mousePosition); // Specify the ray to be casted from the position of the mouse click
+                    print(CamCurrent.name);
+                    touchMouse = CamCurrent.ScreenPointToRay (Input.mousePosition); // Specify the ray to be casted from the position of the mouse click
 
 					// Raycast and verify that it collided
 					if (Physics.Raycast (touchMouse, out rhInfo, 500.0f)) {
@@ -54,11 +64,13 @@ public class ClickAction : MonoBehaviour
 	void SelectKnight (GameObject _KnightToSelect)
 	{
 		if (SelectedKnight) {
-			SelectedKnight.GetComponent<Renderer> ().material.color = Color.white;
-		}
+            SelectedKnight.GetComponent<KnightController>().platformCurent.GetComponent<MeshRenderer>().enabled = false;
+        }
 		SelectedKnight = _KnightToSelect;
-		SelectedKnight.GetComponent<Renderer> ().material.color = Color.red;
-	}
+        MeshRenderer platformCurent = SelectedKnight.GetComponent<KnightController>().platformCurent.GetComponent<MeshRenderer>();
+        platformCurent.material = clickMat[0];
+        platformCurent.enabled = true;
+    }
 
 	public void ChangeState (int _newState)
 	{
@@ -67,7 +79,8 @@ public class ClickAction : MonoBehaviour
 
 	public void Move (Vector3 pos)
 	{
-		SelectedKnight.GetComponent<KnightController> ().MoveKnight (pos);
+        SelectedKnight.GetComponent<KnightController>().platformCurent.GetComponent<MeshRenderer>().enabled = false;
+        SelectedKnight.GetComponent<KnightController> ().MoveKnight (pos);
 		SelectedKnight = null;
 	}
 }

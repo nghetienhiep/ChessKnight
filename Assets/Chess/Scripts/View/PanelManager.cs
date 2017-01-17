@@ -19,13 +19,14 @@ public class PanelManager : MonoBehaviour
 	{
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
-				GameObject pref = Instantiate (ColliderPref, Pos, Quaternion.identity) as GameObject;
+				GameObject pref = Instantiate (ColliderPref);
 				pref.transform.SetParent (transform, true);
-				pref.name = i + "" + j + "";
+                pref.transform.localPosition = Pos;
+                pref.name = i + "" + j + "";
 
 				if ((i == 0 || i == 7)) {
 					if (j == 0 || j == 1 || j == 2 || j == 5 || j == 6 || j == 7)
-						PosKnight.Enqueue (Pos);
+						PosKnight.Enqueue (pref.transform.position);
 				}
 				Pos.x += distance;
 			}
@@ -37,7 +38,7 @@ public class PanelManager : MonoBehaviour
 
 	void SpawnPlayer ()
 	{
-		GameObject player = GameObject.Find ("GameManager");
-		player.GetComponent<PlayerManager> ().enabled = true;
-	}
+        GameObject player = GameObject.Find("GameManager");
+        player.GetComponent<PlayerManager>().enabled = true;
+    }
 }

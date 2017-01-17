@@ -4,69 +4,74 @@ using System.Collections;
 public class PlayerManager : MonoBehaviour
 {
 
-	public static PlayerManager main;
-	public GameObject PlayerPref;
-	PanelManager panel;
+    public static PlayerManager main;
+    public GameObject PlayerPref;
+    PanelManager panel;
+    public Material[] matPlayer;
+    public int numberPlayer;
+    void Awake()
+    {
+        main = this;
+        panel = FindObjectOfType<PanelManager>();
+    }
 
-	void Awake ()
-	{
-		main = this;
-		panel = FindObjectOfType<PanelManager> ();
-	}
+    void OnEnable()
+    {
+        CreatePlayer(matPlayer[numberPlayer]);
+    }
 
-	void OnEnable ()
-	{
-		CreatePlayer (Color.white);
-	}
+    public void CreatePlayer(Material mat)
+    {
+        StartCoroutine(RenKnight(Instantiate(PlayerPref).GetComponentsInChildren<KnightController>(true), mat));
+    }
 
-	public void CreatePlayer (Color color)
-	{
-		StartCoroutine (RenKnight (Instantiate (PlayerPref).GetComponentsInChildren<Transform> (true), color));
-	}
+    IEnumerator RenKnight(KnightController[] g, Material mat)
+    {
+        foreach (KnightController child in g)
+        {
+            Vector3 posChild = panel.PosKnight.Dequeue();
+            posChild.y -= 0.3f;
+            child.gameObject.transform.position = posChild;
+            foreach (Renderer ren in child.GetComponentsInChildren<Renderer>())
+            {
+                ren.material = mat;
+            }
+            if (posChild.z < 0)
+                child.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+            else
+                child.gameObject.transform.rotation = Quaternion.Euler(0, 180, 0);
+            child.gameObject.SetActive(true);
+            yield return new WaitForSeconds(0.3f);
+        }
+        numberPlayer = 1;
+        CreatePlayer2(matPlayer[numberPlayer]);
+    }
+    //=--------------------------------------------------
+    public void CreatePlayer2(Material color)
+    {
+        StartCoroutine(RenKnight2(Instantiate(PlayerPref).GetComponentsInChildren<KnightController>(true), color));
+    }
 
-	IEnumerator RenKnight (Transform[] g, Color color)
-	{
-
-		foreach (Transform child in g) {
-			if (child.gameObject.tag == "Player")
-				continue;
-			Vector3 posChild = panel.PosKnight.Dequeue ();
-			posChild.y -= 0.3f;
-			child.position = posChild;
-			child.GetComponent<Renderer> ().material.color = color;
-			if (posChild.z < 0)
-				child.rotation = Quaternion.Euler (0, 90, 0);
-			else
-				child.rotation = Quaternion.Euler (0, -90, 0);
-			child.gameObject.SetActive (true);
-			yield return new WaitForSeconds (0.3f);
-		}
-		CreatePlayer2 (Color.black);
-	}
-	//=--------------------------------------------------
-	public void CreatePlayer2 (Color color)
-	{
-		StartCoroutine (RenKnight2 (Instantiate (PlayerPref).GetComponentsInChildren<Transform> (true), color));
-	}
-
-	IEnumerator RenKnight2 (Transform[] g, Color color)
-	{
-
-		foreach (Transform child in g) {
-			if (child.gameObject.tag == "Player")
-				continue;
-			Vector3 posChild = panel.PosKnight.Dequeue ();
-			posChild.y -= 0.3f;
-			child.position = posChild;
-			child.GetComponent<Renderer> ().material.color = color;
-			if (posChild.z < 0)
-				child.rotation = Quaternion.Euler (0, 90, 0);
-			else
-				child.rotation = Quaternion.Euler (0, -90, 0);
-			child.gameObject.SetActive (true);
-			yield return new WaitForSeconds (0.3f);
-		}
-	}
+    IEnumerator RenKnight2(KnightController[] g, Material color)
+    {
+        foreach (KnightController child in g)
+        {
+            Vector3 posChild = panel.PosKnight.Dequeue();
+            posChild.y -= 0.3f;
+            child.gameObject.transform.position = posChild;
+            foreach (Renderer ren in child.GetComponentsInChildren<Renderer>())
+            {
+                ren.material = color;
+            }
+            if (posChild.z < 0)
+                child.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+            else
+                child.gameObject.transform.rotation = Quaternion.Euler(0, 180, 0);
+            child.gameObject.SetActive(true);
+            yield return new WaitForSeconds(0.3f);
+        }
+        //CreatePlayer2 (Color.black);
+    }
 
 
 }
